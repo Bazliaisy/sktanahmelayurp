@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SK Tanah Melayu</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Lightbox2 CSS & JS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+  <!-- Spinner CSS -->
+  <style>
+    #loading::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ccc;
+      border-top: 2px solid #333;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <a href="index.html">
+        <img src="gambar/logo.png" alt="Logo SK Tanah Melayu">
+      </a>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Laman Utama</a></li>
+        <li><a href="about.html">Tentang</a></li>
+        <li><a href="contact.html">Hubungi</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h2>Selamat Datang ke SK Tanah Melayu</h2>
+      <p>Melahirkan generasi cemerlang, gemilang dan terbilang.</p>
+      <a href="about.html" class="btn">Ketahui Lebih Lanjut</a>
+    </section>
+
+    <section class="update-section">
+      <h2>📢 Update Terkini</h2>
+      <ul id="update-list">
+        <li id="loading">Memuatkan aktiviti terkini...</li>
+      </ul>
+    </section>
+
+    <section class="galeri-section">
+      <h2>📸 Galeri SK Tanah Melayu</h2>
+      <div class="galeri-grid">
+        <a href="gambar/1.png" data-lightbox="galeri" data-title="Aktiviti 1">
+          <img src="gambar/1.png" alt="Aktiviti 1">
+        </a>
+        <a href="gambar/2.png" data-lightbox="galeri" data-title="Aktiviti 2">
+          <img src="gambar/2.png" alt="Aktiviti 2">
+        </a>
+        <a href="gambar/3.png" data-lightbox="galeri" data-title="Aktiviti 3">
+          <img src="gambar/3.png" alt="Aktiviti 3">
+        </a>
+        <a href="gambar/4.png" data-lightbox="galeri" data-title="Aktiviti 4">
+          <img src="gambar/4.png" alt="Aktiviti 4">
+        </a>
+        <a href="gambar/5.png" data-lightbox="galeri" data-title="Aktiviti 5">
+          <img src="gambar/5.png" alt="Aktiviti 5">
+        </a>
+        <a href="gambar/image-11.png" data-lightbox="galeri" data-title="Aktiviti 6">
+          <img src="gambar/image-11.png" alt="Aktiviti 6">
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 SK Tanah Melayu. Semua hak cipta terpelihara.</p>
+  </footer>
+
+  <script>
+    const statusIcons = {
+      completed: 'gambar/status/completed.svg',
+      upcoming: 'gambar/status/upcoming.svg',
+      cancelled: 'gambar/status/cancelled.svg',
+      default: 'gambar/status/default.png'
+    };
+
+    const list = document.getElementById('update-list');
+    list.innerHTML = '<li id="loading">Memuatkan aktiviti terkini...</li>';
+
+    fetch('https://script.google.com/macros/s/AKfycbzxjfrtbAG7boI4w-TIkVPzy4doukA8Fl1YsJnK2ZnGwD7lupjaCrQTRuVj4QsnC3ay/exec')
+      .then(res => res.json())
+      .then(data => {
+        list.innerHTML = ''; // buang loading
+        data.forEach(item => {
+          const rawDate = item.tarikh || item.Tarikh;
+          const dateObj = new Date(rawDate);
+          if (isNaN(dateObj)) return;
+
+          const tarikh = dateObj.toLocaleDateString('ms-MY', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+
+          const aktiviti = item.aktiviti || item.Aktiviti || 'Tiada aktiviti';
+          const statusRaw = item.status || item.Status || 'Tiada status';
+          const status = statusRaw.toLowerCase();
+
+          const iconUrl = statusIcons[status] || statusIcons.default;
+
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <img src="${iconUrl}" alt="Status: ${statusRaw}" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;">
+            <strong>${tarikh}</strong>: ${aktiviti} <em>(${statusRaw})</em>
+          `;
+          list.appendChild(li);
+        });
+      })
+      .catch(error => {
+        list.innerHTML = '<li>Gagal memuatkan data.</li>';
+        console.error('Ralat:', error);
+      });
+  </script>
+</body>
+</html>
